@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,8 +9,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @OA\Schema(
- *     schema="User",
- *     description="使用者模型",
+ *     schema="Admin",
+ *     description="系統使用者模型",
  *
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="name", type="string", example="John Doe"),
@@ -20,7 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-12-08T00:00:00Z")
  * )
  */
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
