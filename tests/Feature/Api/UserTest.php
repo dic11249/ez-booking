@@ -120,7 +120,7 @@ class UserTest extends TestCase
     public function test_user_can_logout()
     {
         $user = User::factory()->create();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('users')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token",
@@ -142,7 +142,7 @@ class UserTest extends TestCase
     public function test_user_can_get_profile()
     {
         $user = User::factory()->create();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('users')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token",

@@ -109,7 +109,7 @@ class UserController extends Controller
             return response()->json(['message' => '帳號或密碼錯誤'], 401);
         }
 
-        $token = $user->createToken('User Token')->plainTextToken;
+        $token = $user->createToken('users')->plainTextToken;
 
         return response()->json([
             'message' => '登入成功',
