@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
 
-            Route::namespace('Admin')
+            Route::middleware('api')
 
                 ->prefix('api/admin')
 
