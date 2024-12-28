@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\Admin;
 
 use App\Models\Hotel;
 use App\Models\RoomType;
