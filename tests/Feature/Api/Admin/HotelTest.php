@@ -2,14 +2,26 @@
 
 namespace Tests\Feature\Api\Admin;
 
-use App\Models\Amenity;
-use App\Models\Hotel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\Admin;
+use App\Models\Hotel;
+use App\Models\Amenity;
+use Laravel\Sanctum\Sanctum;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class HotelTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected $token;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $admin = Admin::factory()->create();
+        $this->token = $admin->createToken('admins')->plainTextToken;
+    }
 
     /**
      * 測試取得飯店清單 (成功)
@@ -20,7 +32,9 @@ class HotelTest extends TestCase
         Hotel::factory()->count(5)->create();
 
         // 模擬 API 呼叫
-        $response = $this->getJson('/api/admin/hotels');
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->getJson('/api/admin/hotels');
 
         // 驗證回應
         $response->assertStatus(200)
@@ -42,7 +56,10 @@ class HotelTest extends TestCase
         Hotel::factory()->create(['city' => 'Osaka']);
 
         // 篩選條件
-        $response = $this->getJson('/api/admin/hotels?city=Tokyo');
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])
+        ->getJson('/api/admin/hotels?city=Tokyo');
 
         // 驗證回應
         $response->assertStatus(200)
@@ -72,7 +89,10 @@ class HotelTest extends TestCase
             'amenities' => $amenities->pluck('id')->toArray(),
         ];
 
-        $response = $this->postJson('/api/admin/hotels', $data);
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])
+        ->postJson('/api/admin/hotels', $data);
 
         $response->assertStatus(201)
             ->assertJsonFragment(['name' => 'Hotel Test']);
@@ -89,7 +109,10 @@ class HotelTest extends TestCase
     {
         $hotel = Hotel::factory()->create();
 
-        $response = $this->getJson("/api/admin/hotels/$hotel->id");
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])
+        ->getJson("/api/admin/hotels/$hotel->id");
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => $hotel->name]);
@@ -120,7 +143,9 @@ class HotelTest extends TestCase
             'amenities' => $newAmenities->pluck('id')->toArray(),
         ];
 
-        $response = $this->putJson('/api/admin/hotels/' . $hotel->id, $data);
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->putJson('/api/admin/hotels/' . $hotel->id, $data);
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Updated Hotel Name']);
@@ -144,7 +169,9 @@ class HotelTest extends TestCase
     {
         $hotel = Hotel::factory()->create();
 
-        $response = $this->deleteJson("/api/admin/hotels/$hotel->id");
+        $response = $this->withHeaders([
+           'Authorization' => "Bearer $this->token",
+        ])->deleteJson("/api/admin/hotels/$hotel->id");
 
         $response->assertStatus(204);
 
@@ -156,7 +183,9 @@ class HotelTest extends TestCase
      */
     public function test_show_nonexistent_hotel_returns_404()
     {
-        $response = $this->getJson('/api/admin/hotels/999');
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->getJson('/api/admin/hotels/999');
 
         $response->assertStatus(404);
     }

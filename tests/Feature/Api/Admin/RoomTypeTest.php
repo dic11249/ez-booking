@@ -2,20 +2,26 @@
 
 namespace Tests\Feature\Api\Admin;
 
+use App\Models\Admin;
+use Tests\TestCase;
 use App\Models\Hotel;
 use App\Models\RoomType;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class RoomTypeTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $hotel;
+    protected $token;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        $admin = Admin::factory()->create();
+        $this->token = $admin->createToken('admins')->plainTextToken;
 
         $this->hotel = Hotel::factory()->create();
     }
@@ -29,7 +35,9 @@ class RoomTypeTest extends TestCase
             'hotel_id' => $this->hotel->id,
         ]);
 
-        $response = $this->getJson("/api/admin/hotels/{$this->hotel->id}/room-types");
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->getJson("/api/admin/hotels/{$this->hotel->id}/room-types");
 
         $response->assertStatus(200)
             ->assertJsonCount(3);
@@ -52,7 +60,9 @@ class RoomTypeTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson("/api/admin/hotels/{$this->hotel->id}/room-types", $roomTypeData);
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->postJson("/api/admin/hotels/{$this->hotel->id}/room-types", $roomTypeData);
 
         $response->assertStatus(201)
             ->assertJson([
@@ -79,7 +89,9 @@ class RoomTypeTest extends TestCase
             'base_price' => -100, // 負數價格
         ];
 
-        $response = $this->postJson("/api/admin/hotels/{$this->hotel->id}/room-types", $invalidRoomTypeData);
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->postJson("/api/admin/hotels/{$this->hotel->id}/room-types", $invalidRoomTypeData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors([
@@ -99,7 +111,9 @@ class RoomTypeTest extends TestCase
             'hotel_id' => $this->hotel->id
         ]);
 
-        $response = $this->getJson("/api/admin/hotels/{$this->hotel->id}/room-types/{$roomType->id}");
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->getJson("/api/admin/hotels/{$this->hotel->id}/room-types/{$roomType->id}");
 
         $response->assertStatus(200)
                  ->assertJson([
@@ -128,7 +142,9 @@ class RoomTypeTest extends TestCase
             ]
         ];
 
-        $response = $this->putJson("/api/admin/hotels/{$this->hotel->id}/room-types/{$roomType->id}", $updatedData);
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token",
+        ])->putJson("/api/admin/hotels/{$this->hotel->id}/room-types/{$roomType->id}", $updatedData);
 
         $response->assertStatus(200)
                  ->assertJson([
