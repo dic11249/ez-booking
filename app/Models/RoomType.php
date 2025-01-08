@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\RoomInventory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * @OA\Schema(
  *     schema="RoomType",
@@ -40,10 +41,16 @@ class RoomType extends Model
 
     protected $casts = [
         'amenities' => 'array',
+        'base_price' => 'decimal:2',
     ];
 
     public function hotel()
     {
         return $this->belongsTo(Hotel::class);
+    }
+
+    public function roomInventories()
+    {
+        return $this->hasMany(RoomInventory::class);
     }
 }

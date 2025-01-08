@@ -18,7 +18,7 @@ class RoomTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'hotel_id' => Hotel::factory(),
+            'hotel_id' => Hotel::factory()->create()->id,
             'name' => $this->faker->word,
             'capacity' => $this->faker->numberBetween(1, 4),
             'base_price' => $this->faker->randomFloat(2, 50, 500),

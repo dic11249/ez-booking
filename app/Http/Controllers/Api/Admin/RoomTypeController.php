@@ -54,6 +54,22 @@ class RoomTypeController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="房型資料",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name", "capacity", "base_price", "description"},
+     *                 @OA\Property(property="name", type="string", description="房型名稱", example="Standard Room"),
+     *                 @OA\Property(property="capacity", type="integer", description="最大容納人數", example=2),
+     *                 @OA\Property(property="base_price", type="number", format="float", description="基礎價格", example=100.00),
+     *                 @OA\Property(property="description", type="string", description="房型描述", example="A cozy room with a double bed."),
+     *                 @OA\Property(property="amenities", type="array", description="設施", @OA\Items(type="string", example="Wi-Fi"))
+     *             )
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=201,
      *         description="成功建立房間類型",
@@ -105,9 +121,19 @@ class RoomTypeController extends Controller
      *     )
      * )
      */
-    public function show(int $hotelId, int $roomTypeId)
+    public function show(Request $request, int $hotelId, int $roomTypeId)
     {
-        $roomType = RoomType::where('hotel_id', $hotelId)->findOrFail($roomTypeId);
+        // 取得 year 和 month 參數，若未提供則使用當前年份和月份
+        $year = $request->input('year', now()->year); // 預設為當前年份
+        $month = $request->input('month', now()->month); // 預設為當前月份
+
+        $roomType = RoomType::with(['roomInventories' => function ($query) use ($year, $month) {
+            // 只撈出指定年份與月份的房間庫存資料
+            $query->whereYear('date', $year)
+                ->whereMonth('date', $month);
+        }])
+        ->where('hotel_id', $hotelId)
+        ->findOrFail($roomTypeId);
 
         return response()->json($roomType, 200);
     }
