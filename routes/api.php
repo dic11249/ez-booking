@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AmenityController;
+use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,8 @@ Route::middleware('auth:users')->group(function () {
 Route::get('/hotels', [HotelController::class, 'index']);
 Route::get('/hotels/{hotel}', [HotelController::class, 'show']);
 
-Route::apiResource('amenities', AmenityController::class);
+Route::get('/bookings', [BookingController::class, 'index']);
+Route::get('/bookings/{booking}', [BookingController::class, 'show']);
+Route::post('/room-types/{roomType}/booking', [BookingController::class, 'store']);
 
 

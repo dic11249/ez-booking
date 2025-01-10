@@ -36,13 +36,13 @@ class BookingTest extends TestCase
     /**
      * 測試取得訂單清單
      */
-    public function can_get_all_bookings(): void
+    public function test_can_get_all_bookings(): void
     {
         $response = $this->withHeader('Authorization', "Bearer $this->token")
             ->getJson('/api/admin/bookings');
-
+        
         $response->assertStatus(200)
-            ->assertJsonCount(1);
+            ->assertJsonCount(1, 'data');
     }
 
     /**
@@ -80,7 +80,7 @@ class BookingTest extends TestCase
     /**
      * 測試更新訂單狀態
      */
-    public function can_update_booking_status()
+    public function test_can_update_booking_status()
     {
         $newStatus = 'confirmed';
 
