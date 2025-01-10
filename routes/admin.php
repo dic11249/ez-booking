@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\AdminController;
-use App\Http\Controllers\Api\Admin\AmenityController;
-use App\Http\Controllers\Api\Admin\HotelController;
-use App\Http\Controllers\Api\Admin\RoomInventoryController;
-use App\Http\Controllers\Api\Admin\RoomTypeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Admin\HotelController;
+use App\Http\Controllers\Api\Admin\AmenityController;
+use App\Http\Controllers\Api\Admin\BookingController;
+use App\Http\Controllers\Api\Admin\RoomTypeController;
+use App\Http\Controllers\Api\Admin\RoomInventoryController;
 
 Route::post('/register', [AdminController::class, 'register']);
 Route::post('/login', [AdminController::class, 'login']);
@@ -28,4 +29,9 @@ Route::middleware('auth:admins')->group(function () {
 
     /** 房間庫存 */
     Route::post('/room-types/{roomType}/inventories', [RoomInventoryController::class, 'setInventory']);
+    
+    /** 訂單 */
+    Route::get('/bookings', [BookingController::class, 'index']);
+    Route::get('/bookings/{booking}', [BookingController::class, 'show']);
+    Route::put('/bookings/{booking}', [BookingController::class, 'update']);
 });
