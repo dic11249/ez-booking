@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\RoomInventory;
@@ -171,7 +172,7 @@ class BookingController extends Controller
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(Request $request, int $room_type_id)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
@@ -182,7 +183,7 @@ class BookingController extends Controller
             'special_requests' => 'nullable|string|max:500',
         ]);
 
-        $booking = DB::transaction(function () use ($request) {
+        $booking = DB::transaction(function () use ($request, $room_type_id) {
             $can_booking = $this->checkAvailability($request);
 
             if (!$can_booking) {
@@ -205,12 +206,12 @@ class BookingController extends Controller
 
             // 建立訂單
             $booking = Booking::create([
-                'user_id' => $request->user_id,
-                'room_type_id' => $request->room_type_id,
+                'user_id' => Auth::guard('users')->id(),
+                'room_type_id' => $room_type_id,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'total_price' => $totalPrice,
-                'status' => 'pending',
+                'status' => BookingStatus::Pending,
                 'guest_count' => $request->guest_count,
                 'special_requests' => $request->special_requests,
             ]);

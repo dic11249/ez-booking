@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Enums\BookingStatus;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
 
 class BookingController extends Controller
 {
@@ -108,7 +110,11 @@ class BookingController extends Controller
     {
         $booking = Booking::findOrFail($id);
 
-        $booking->update($request->only('status'));
+        $validated = $request->validate([
+            'status' => ['required', Rule::enum(BookingStatus::class)],
+        ]);
+
+        $booking->update($validated);
 
         return response()->json($booking, 200);
     }
